@@ -223,3 +223,42 @@ if(logoImg){
   logoImg.style.filter='none';
   logoImg.style.mixBlendMode='normal';
 }
+
+// ─── Dark Mode ───
+(function(){
+  const KEY='itszhop_theme';
+  const toggle=document.getElementById('themeToggle');
+  const root=document.documentElement;
+
+  function applyTheme(theme){
+    if(theme==='dark'){
+      root.setAttribute('data-theme','dark');
+      toggle.textContent='☀️';
+    } else {
+      root.removeAttribute('data-theme');
+      toggle.textContent='🌙';
+    }
+  }
+
+  // Read saved preference, or fall back to system preference
+  const saved=localStorage.getItem(KEY);
+  if(saved){
+    applyTheme(saved);
+  } else if(window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches){
+    applyTheme('dark');
+  }
+
+  toggle.addEventListener('click',()=>{
+    const isDark=root.getAttribute('data-theme')==='dark';
+    const next=isDark?'light':'dark';
+    applyTheme(next);
+    localStorage.setItem(KEY,next);
+  });
+
+  // React to system preference changes (if no saved preference)
+  window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',e=>{
+    if(!localStorage.getItem(KEY)){
+      applyTheme(e.matches?'dark':'light');
+    }
+  });
+})();
